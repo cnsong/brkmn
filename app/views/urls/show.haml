@@ -1,0 +1,21 @@
+- if flash[:notice]
+  #notice.message= flash[:notice]
+- elsif flash[:warning]
+  #warning.message= flash[:warning]
+- elsif flash[:error]
+  #error.message= flash[:error]
+%fieldset
+  %legend URL Details 
+  = form_for(@url) do |f|
+    = f.label :to, 'Full URL: '
+    = @url.to
+    %br
+    %br
+    = f.label :shortened, 'Shortened URL: '
+    = @url.shortened
+    %br
+    %br
+    = f.label :clicks, 'Clicks: '
+    = @url.clicks
+  %br
+  = link_to "Back", urls_path, :class => 'back'

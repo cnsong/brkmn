@@ -7,7 +7,7 @@ class Url < ActiveRecord::Base
 
   belongs_to :user
 
-  attr_accessible :to, :shortened, :auto
+  attr_accessible :to, :shortened, :auto, :clicks
   before_create :generate_url
 
   URL_FORMAT = /^[a-z\d\/]+$/i
@@ -19,23 +19,27 @@ class Url < ActiveRecord::Base
 
   validate :to do
     if self.to.match(PROTECTED_REDIRECT_REGEX)
-      self.errors.add(:to, "just can't go there. Not gonna happen.")
+      self.errors.add(:to, "cannot be 'localhost' or 'brk.mn'.")
     end
   end
 
   validate :shortened do
     # We will auto-create if it's blank.
     return if self.shortened.blank?
-    if Url.count(:conditions =>{:shortened => self.shortened}) > 0
-      self.errors.add(:shortened, "is already in use. Please choose another.")
+    if Url.count(:conditions =>{:shortened => self.shortened, :to => self.to}) > 0
+      self.errors.add(:shortened, "is already in use for (" + self.to + "). Please choose another.")
     end
     if self.shortened.match(PROTECTED_URL_REGEX)
-      self.errors.add(:shortened, "is a protected URL and you can't have it. It's mine.")
+      self.errors.add(:shortened, "is a protected URL and cannot be used. Please choose another.")
     end
     if ! self.shortened.match(URL_FORMAT)
       self.errors.add(:shortened, "needs to contains letters, numbers, or the forward slash")
     end
     return 
+  end
+  
+  def self.all_owners
+	%w(Other User)
   end
 
   def generate_url
@@ -59,6 +63,6 @@ class Url < ActiveRecord::Base
     end
     #Return true to ensure this doesn't look like a failed validation.
     return true
-  end
+  end  
 
 end

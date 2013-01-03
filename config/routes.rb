@@ -13,4 +13,7 @@ Brkmn::Application.routes.draw do
   match '/redirector/invalid' => 'redirector#invalid'
 
   match '/:id' => 'redirector#index', :as => :shortened
+  
+  match '/urls/:id' => 'urls#reset', :as => :reset
+  
 end

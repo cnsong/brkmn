@@ -19,3 +19,6 @@ config/database.yml
 
 # Ignore RVM 
 /.rvmrc
+
+#DS_Store Files
+.DS_Store

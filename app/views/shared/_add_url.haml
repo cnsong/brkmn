@@ -1,4 +1,10 @@
 .add_form
+  - if flash[:notice]
+    #notice.message= flash[:notice]
+  - elsif flash[:warning]
+    #warning.message= flash[:warning]
+  - elsif flash[:error]
+    #error.message= flash[:error]
   %fieldset
     %legend Shorten a URL
     = form_for(Url.new(:to => (params[:url].blank?) ? 'http://' : params[:url][:to])) do |f|
@@ -8,3 +14,5 @@
       %br
       = "http://#{REDIRECT_DOMAIN}/"
       = f.text_field(:shortened, :size => 10, :placeholder => "OPTIONAL: shorten to. . . ", :tabindex => 2)
+- unless @urls.nil?
+  = render :partial => 'shared/url_list'

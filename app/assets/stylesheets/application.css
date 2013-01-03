@@ -98,18 +98,31 @@ legend{
 
 #filter_control span {
   display: inline-block;
+  margin-bottom: 5px;
 }
 
 #filter_control{
+  border: 1px #ccc;
+  border-style: none none dotted none;
   text-align: right;
 }
 
+.owners{
+  border: 1px #ccc;
+  border-style: none none dotted none;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  text-align: left;
+}
+
 .pagination{
-  text-align: center;
+  display:inline;
+  text-align: left;
 }
 
 .top_pagination, .bottom_pagination{
   border: 1px #ccc;
+  text-align: right;
 }
 
 .top_pagination{
@@ -130,15 +143,30 @@ table{
 
 td{
   padding: 2px;
+  word-break: break-all;
 }
 
-td.shortened{
-  width: 33%;
+.shortened{
+  width: 30%;
 }
 
-td.arrow{
+.arrow{
+  width: 5%;
   font-size: 2em;
   line-height: 1em;
+  text-align: center;
+}
+
+.to{
+  width: 45%;
+}
+
+.clicks{
+  width: 10%;
+}
+
+th{
+  text-align: left;
 }
 
 #filters td{
@@ -182,3 +210,75 @@ footer a.bookmarklet:hover{
   text-decoration: underline;
 }
 
+#notice, #warning {
+  background: rgb(140,0,2);
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  margin: 1em 0 0 0;
+  padding: 4px;
+  color: white;
+  text-align: center;
+}
+
+#error {
+  background-color: red;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  margin: 1em 0 0 0;
+  padding: 4px;
+  color: white;
+  text-align: center;
+}
+
+form label {
+  display: block;
+  line-height: 25px;
+  font-weight: bold;
+  color: maroon;
+}
+ 
+input.text {
+  margin: 0em 0 1em 0;
+  padding: 5px;
+}
+
+th.hilite {
+  background-color: LightYellow;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+th.hilite_shortened {
+  width: 30%;
+  background-color: LightYellow;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+th.hilite_to {
+  width: 45%;
+  background-color: LightYellow;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+th.hilite_clicks {
+  width: 10%;
+  background-color: LightYellow;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.back {
+  margin: 0em 0.25em;
+}
+
+.edit {
+  margin: 0em 0.25em;
+}
+
+.search{
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+  text-align: right;
+}
