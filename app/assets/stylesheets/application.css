@@ -242,33 +242,6 @@ input.text {
   padding: 5px;
 }
 
-th.hilite {
-  background-color: LightYellow;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-}
-
-th.hilite_shortened {
-  width: 30%;
-  background-color: LightYellow;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-}
-
-th.hilite_to {
-  width: 45%;
-  background-color: LightYellow;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-}
-
-th.hilite_clicks {
-  width: 10%;
-  background-color: LightYellow;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-}
-
 .back {
   margin: 0em 0.25em;
 }
@@ -281,4 +254,21 @@ th.hilite_clicks {
   padding-bottom: 4px;
   margin-bottom: 4px;
   text-align: right;
+}
+
+th .current {
+  padding-right: 24px;
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-color: LightYellow;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+th .asc { 
+  background-image: url(/images/up_arrow.gif);
+}
+
+th .desc { 
+  background-image: url(/images/down_arrow.gif); 
 }

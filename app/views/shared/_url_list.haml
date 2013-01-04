@@ -6,23 +6,12 @@
         = submit_tag "Search", :name => nil
         = link_to "Clear", :controller => "urls", :action => "index", :search => ''
   %tr
-    %td{:colspan => 1, :class => "owners"}
-      = form_tag urls_path, :method => :get, :id => 'owners_form' do
-        Owners:
-        - @all_owners.each do |owner|
-          = owner
-          = check_box_tag "owners[#{owner}]", 1, @selected_owners.include?(owner), :id => "owners_#{owner}"
-        = submit_tag 'Filter', :id => 'owners_submit'
-    %td{:colspan => 3, :class => "top_pagination"}
+    %td{:colspan => 4, :class => "top_pagination"}
       = will_paginate @urls
-    /%td{:id => 'filter_control'} /
-    /  %span Hide Filter/
   %tr
-    %th{:class => @shortened_header}= link_to 'Shortened URL', urls_path(:sort => 'shortened_url'), :id => 'shortened_header'
+    %th{:class => @shortened_header}= sortable 'shortened', 'Shortened URL'
     %th{:class => "arrow"}
-    %th{:class => @full_header}= link_to 'Full URL', urls_path(:sort => 'full_url', :owners => @selected_owners), :id => 'full_header'
-    %th{:class => @clicks_header}= link_to 'Clicks', urls_path(:sort => 'clicks_sort', :owners => @selected_owners), :id => 'clicks_header'
+    %th{:class => @full_header}= sortable '"to"', 'Full URL'
+    %th{:class => @clicks_header}= sortable 'clicks', 'Clicks'
     = render :partial => 'urls/url_list', :collection => @urls
-  %tr
-    %td{:colspan => 4, :class => "bottom_pagination"}
-      = will_paginate @urls
+

@@ -1,5 +1,6 @@
 class UrlsController < ApplicationController
   before_filter :is_authenticated
+  helper_method :sort_column, :sort_direction
 
   def bookmarklet
     @page_title = "Shorten a URL - #{REDIRECT_DOMAIN}"
@@ -12,34 +13,36 @@ class UrlsController < ApplicationController
 
   def index
     @page_title = "Shorten a URL - #{REDIRECT_DOMAIN}"
+    
+    @urls = Url.order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
    
-    ordering = 'created_at desc'
-    @sort = params[:sort] || session[:sort]
-    @search = params[:search] || session[:search]
-    
-    case @sort
-    when "shortened_url"
-      ordering, @shortened_header, @full_header, @clicks_header = 'shortened asc', 'hilite_shortened', 'to', 'clicks'
-    when "full_url"
-      ordering, @full_header, @shortened_header, @clicks_header = '"to" asc', 'hilite_to', 'shortened', 'clicks'
-    when "clicks_sort"
-      ordering, @clicks_header, @shortened_header, @full_header, = 'clicks desc', 'hilite_clicks',  'shortened', 'to'
-    end
-    
-    @all_owners = Url.all_owners
-    @selected_owners = params[:owners] || session[:owners] || {}
-  
-    if @selected_owners == {}
-      @selected_owners = Hash[@all_owners.map {|owner| [owner, owner]}]
-    end
-    
-    if params[:sort] != session[:sort] or params[:owners] != session[:owners]
-      session[:sort] = @sort
-      session[:owners] = @selected_owners
-      session[:search] = @search
-      flash.keep
-      redirect_to :sort => @sort, :owners => @selected_owners, :search => @search and return
-    end
+   #  ordering = 'created_at desc'
+#     @sort = params[:sort] || session[:sort]
+#     @search = params[:search] || session[:search]
+#     
+#     case @sort
+#     when "shortened_url"
+#       ordering, @shortened_header, @full_header, @clicks_header = 'shortened asc', 'hilite_shortened', 'to', 'clicks'
+#     when "full_url"
+#       ordering, @full_header, @shortened_header, @clicks_header = '"to" asc', 'hilite_to', 'shortened', 'clicks'
+#     when "clicks_sort"
+#       ordering, @clicks_header, @shortened_header, @full_header, = 'clicks desc', 'hilite_clicks',  'shortened', 'to'
+#     end
+#     
+#     @all_owners = Url.all_owners
+#     @selected_owners = params[:owners] || session[:owners] || {}
+#   
+#     if @selected_owners == {}
+#       @selected_owners = Hash[@all_owners.map {|owner| [owner, owner]}]
+#     end
+#     
+#     if params[:sort] != session[:sort] or params[:owners] != session[:owners]
+#       session[:sort] = @sort
+#       session[:owners] = @selected_owners
+#       session[:search] = @search
+#       flash.keep
+#       redirect_to :sort => @sort, :owners => @selected_owners, :search => @search and return
+#     end
     
    # if params[:owners] != session[:owners] and @selected_owners != {}
     #  session[:sort] = @sort
@@ -48,13 +51,22 @@ class UrlsController < ApplicationController
     #  redirect_to :sort => @sort, :owners => @selected_owners and return
    # end
    
-    if (@selected_owners.keys.include?("Other") and @selected_owners.keys.include?("User")) || @selected_owners == {}
-      @urls = Url.where((@search.blank?) ? ['1 = 1'] : ['"shortened" like ? OR "to" like ?', "%#{@search}%", "%#{@search}%"]).order(ordering).paginate(:page => params[:page], :per_page => params[:per_page])
-    elsif @selected_owners.keys.include?("Other")
-      @urls = Url.where((@search.blank?) ? ['user_id <> ' + current_user.id.to_s] : ['("shortened" like ? OR "to" like ?) AND user_id <> ' + current_user.id.to_s, "%#{@search}%", "%#{@search}%"]).order(ordering).paginate(:page => params[:page], :per_page => params[:per_page])
-    else
-      @urls = Url.where((@search.blank?) ? ['user_id = ' + current_user.id.to_s] : ['("shortened" like ? OR "to" like ?) AND user_id = ' + current_user.id.to_s, "%#{@search}%", "%#{@search}%"]).order(ordering).paginate(:page => params[:page], :per_page => params[:per_page])
-    end
+    # if (@selected_owners.keys.include?("Other") and @selected_owners.keys.include?("User")) || @selected_owners == {}
+#       @urls = Url.where((@search.blank?) ? ['1 = 1'] : ['"shortened" like ? OR "to" like ?', "%#{@search}%", "%#{@search}%"]).order(ordering).paginate(:page => params[:page], :per_page => params[:per_page])
+#     elsif @selected_owners.keys.include?("Other")
+#       @urls = Url.where((@search.blank?) ? ['user_id <> ' + current_user.id.to_s] : ['("shortened" like ? OR "to" like ?) AND user_id <> ' + current_user.id.to_s, "%#{@search}%", "%#{@search}%"]).order(ordering).paginate(:page => params[:page], :per_page => params[:per_page])
+#     else
+#       @urls = Url.where((@search.blank?) ? ['user_id = ' + current_user.id.to_s] : ['("shortened" like ? OR "to" like ?) AND user_id = ' + current_user.id.to_s, "%#{@search}%", "%#{@search}%"]).order(ordering).paginate(:page => params[:page], :per_page => params[:per_page])
+#     end
+  end
+  
+  private
+  def sort_column
+    %w[shortened "to" clicks].include?(params[:sort]) ? params[:sort] : "shortened"
+  end
+  
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ?  params[:direction] : "asc"
   end
 
   def create
