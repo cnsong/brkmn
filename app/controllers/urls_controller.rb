@@ -1,5 +1,5 @@
 class UrlsController < ApplicationController
-  load_and_authorize_resource
+  
   before_filter :is_authenticated
   helper_method :sort_column, :sort_direction
 
@@ -11,7 +11,6 @@ class UrlsController < ApplicationController
     begin
       @url = Url.mine(current_user).find params[:id]
     rescue
-      logger.warn(@url.errors.inspect)
       flash[:error] = "Insufficient privileges. Access denied."
       redirect_to urls_path
     end
@@ -62,7 +61,6 @@ class UrlsController < ApplicationController
     begin
       @url = Url.mine(current_user).find params[:id]
     rescue
-      logger.warn(@url.errors.inspect)
       flash[:error] = "Insufficient privileges. Access denied."
       redirect_to urls_path
     end
