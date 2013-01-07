@@ -17,8 +17,12 @@
     = @url.clicks
     %br
     %br
-    = f.submit 'Save Changes'
+    = f.submit 'Save Changes', :class => 'save'
+    %br
+    %br
   -if @url.clicks > 0
-    = button_to 'Reset Clicks', reset_path(@url.id.to_s), :confirm => "Are you sure you would like to reset 'Clicks' for this shortened URL (" + shortened_url(@url.shortened) + ") ?"
-  = button_to 'Delete', '/urls/' + @url.id.to_s, :confirm => 'Are you sure you would like to delete this shortened URL (' + shortened_url(@url.shortened) + ') ?', :method => :delete
-  = link_to "Back", urls_path, :class => 'back'
+    = link_to 'Reset Clicks', reset_path(@url.id.to_s), :confirm => "Are you sure you would like to reset 'Clicks' for this shortened URL (" + shortened_url(@url.shortened) + ") ?", :class => 'link'
+    |
+  = link_to 'Delete', '/urls/' + @url.id.to_s, :confirm => 'Are you sure you would like to delete this shortened URL (' + shortened_url(@url.shortened) + ') ?', :method => :delete, :class => 'link'
+  |
+  = link_to 'Back', urls_path, :class => 'link'

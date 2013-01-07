@@ -107,6 +107,24 @@ legend{
   text-align: right;
 }
 
+.save{
+  color: darkred;
+  padding: 5px 10px 5px 10px;
+  font-size: 1.0em;
+  font-weight: bold;
+  background-color: #aaa;
+  border-radius: 5px;
+}
+
+.search_button{
+  color: darkred;
+  padding: 5px 10px 5px 10px;
+  font-size: 1.0em;
+  font-weight: bold;
+  background-color: #aaa;
+  border-radius: 5px;
+}
+
 .owners{
   border: 1px #ccc;
   border-style: none none dotted none;
@@ -248,7 +266,7 @@ input.text {
   padding: 5px;
 }
 
-.back {
+.link {
   margin: 0em 0.25em;
 }
 
@@ -260,6 +278,9 @@ input.text {
   padding-bottom: 4px;
   margin-bottom: 4px;
   text-align: right;
+  color: darkred;
+  font-size: 1.0em;
+  font-weight: bold;
 }
 
 th .current {

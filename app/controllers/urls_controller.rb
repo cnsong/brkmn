@@ -140,10 +140,16 @@ class UrlsController < ApplicationController
     case params[:sort] || session[:sort]
     when '"to"'
       @to_header = 'to hilite'
+      @click_header = 'clicks'
+      @shortened_header = 'shortened'
     when "clicks"
       @clicks_header = 'clicks hilite'
+      @to_header = 'to'
+      @shortened_header = 'shortened'
     else
       @shortened_header = 'shortened hilite'
+      @click_header = 'clicks'
+      @to_header = 'to'
     end
   end
 
