@@ -1,72 +1,38 @@
 class UrlsController < ApplicationController
+  load_and_authorize_resource
   before_filter :is_authenticated
   helper_method :sort_column, :sort_direction
 
   def bookmarklet
     @page_title = "Shorten a URL - #{REDIRECT_DOMAIN}"
-    
   end
   
   def show
-  	@url = Url.find params[:id]
+    begin
+      @url = Url.mine(current_user).find params[:id]
+    rescue
+      logger.warn(@url.errors.inspect)
+      flash[:error] = "Insufficient privileges. Access denied."
+      redirect_to urls_path
+    end
   end
 
   def index
     @page_title = "Shorten a URL - #{REDIRECT_DOMAIN}"
     
-    @urls = Url.order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
-   
-   #  ordering = 'created_at desc'
-#     @sort = params[:sort] || session[:sort]
-#     @search = params[:search] || session[:search]
-#     
-#     case @sort
-#     when "shortened_url"
-#       ordering, @shortened_header, @full_header, @clicks_header = 'shortened asc', 'hilite_shortened', 'to', 'clicks'
-#     when "full_url"
-#       ordering, @full_header, @shortened_header, @clicks_header = '"to" asc', 'hilite_to', 'shortened', 'clicks'
-#     when "clicks_sort"
-#       ordering, @clicks_header, @shortened_header, @full_header, = 'clicks desc', 'hilite_clicks',  'shortened', 'to'
-#     end
-#     
-#     @all_owners = Url.all_owners
-#     @selected_owners = params[:owners] || session[:owners] || {}
-#   
-#     if @selected_owners == {}
-#       @selected_owners = Hash[@all_owners.map {|owner| [owner, owner]}]
-#     end
-#     
-#     if params[:sort] != session[:sort] or params[:owners] != session[:owners]
-#       session[:sort] = @sort
-#       session[:owners] = @selected_owners
-#       session[:search] = @search
-#       flash.keep
-#       redirect_to :sort => @sort, :owners => @selected_owners, :search => @search and return
-#     end
+    hilite
     
-   # if params[:owners] != session[:owners] and @selected_owners != {}
-    #  session[:sort] = @sort
-    #  session[:owners] = @selected_owners
-    #  flash.keep
-    #  redirect_to :sort => @sort, :owners => @selected_owners and return
-   # end
-   
-    # if (@selected_owners.keys.include?("Other") and @selected_owners.keys.include?("User")) || @selected_owners == {}
-#       @urls = Url.where((@search.blank?) ? ['1 = 1'] : ['"shortened" like ? OR "to" like ?', "%#{@search}%", "%#{@search}%"]).order(ordering).paginate(:page => params[:page], :per_page => params[:per_page])
-#     elsif @selected_owners.keys.include?("Other")
-#       @urls = Url.where((@search.blank?) ? ['user_id <> ' + current_user.id.to_s] : ['("shortened" like ? OR "to" like ?) AND user_id <> ' + current_user.id.to_s, "%#{@search}%", "%#{@search}%"]).order(ordering).paginate(:page => params[:page], :per_page => params[:per_page])
-#     else
-#       @urls = Url.where((@search.blank?) ? ['user_id = ' + current_user.id.to_s] : ['("shortened" like ? OR "to" like ?) AND user_id = ' + current_user.id.to_s, "%#{@search}%", "%#{@search}%"]).order(ordering).paginate(:page => params[:page], :per_page => params[:per_page])
-#     end
-  end
+    @search_text = params[:search] || session[:search]
   
-  private
-  def sort_column
-    %w[shortened "to" clicks].include?(params[:sort]) ? params[:sort] : "shortened"
-  end
-  
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : "asc"
+    if params[:search] != session[:search]
+      session[:search] = @search_text
+    end
+    
+    if current_user.superadmin?
+      @urls = Url.search(@search_text).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
+    else
+      @urls = Url.search(@search_text).mine(current_user).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
+    end
   end
 
   def create
@@ -93,12 +59,16 @@ class UrlsController < ApplicationController
   end
   
   def edit
-    @url = Url.find params[:id]
+    begin
+      @url = Url.mine(current_user).find params[:id]
+    rescue
+      logger.warn(@url.errors.inspect)
+      flash[:error] = "Insufficient privileges. Access denied."
+      redirect_to urls_path
+    end
   end
   
   def update
-    @url = Url.find params[:id]
-    
     respond_to do |f|
       f.html {
         if @url.update_attributes(params[:url])
@@ -111,12 +81,9 @@ class UrlsController < ApplicationController
     end
     
     redirect_to edit_url_path(@url.id)
-    
   end
   
   def reset
-    @url = Url.find params[:id]
-    
     respond_to do |f|
       f.html {
         if @url.update_attribute(:clicks, 0)
@@ -132,8 +99,6 @@ class UrlsController < ApplicationController
   end
   
   def destroy
-    @url = Url.find params[:id]
-    
     respond_to do |f|
       f.html {
         if @url.destroy
@@ -146,6 +111,40 @@ class UrlsController < ApplicationController
     end
     
     redirect_to urls_path
+  end
+  
+  private
+  def sort_column
+  
+    sort = params[:sort] || session[:sort]
+  
+    if params[:sort] != session[:sort]
+      session[:sort] = sort
+    end
+
+    %w[shortened "to" clicks].include?(sort) ? sort : "shortened"
+  end
+  
+  def sort_direction
+  
+    direction = params[:direction] || session[:direction]
+  
+    if params[:direction] != session[:direction]
+      session[:direction] = direction
+    end
+    
+    %w[asc desc].include?(direction) ?  direction : "asc"
+  end
+  
+  def hilite   
+    case params[:sort] || session[:sort]
+    when '"to"'
+      @to_header = 'to hilite'
+    when "clicks"
+      @clicks_header = 'clicks hilite'
+    else
+      @shortened_header = 'shortened hilite'
+    end
   end
 
 end

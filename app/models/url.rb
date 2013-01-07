@@ -39,7 +39,15 @@ class Url < ActiveRecord::Base
   end
   
   def self.all_owners
-	%w(Other User)
+	%w(Others Mine)
+  end
+  
+  def self.search(search)
+    if search
+      where('shortened like ? OR "to" like ?', "%#{search}%", "%#{search}%")
+    else
+      scoped
+    end
   end
 
   def generate_url

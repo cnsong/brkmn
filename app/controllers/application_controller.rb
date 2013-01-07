@@ -1,5 +1,9 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
+  rescue_from CanCan::AccessDenied do |exception|
+    flash[:error] = "Insufficient privileges. Access denied."
+    redirect_to urls_path
+  end
 
   def is_authenticated
     # In production with the apache config in README.rdoc there should never be an app-level
@@ -13,5 +17,4 @@ class ApplicationController < ActionController::Base
   def current_user
     @current_user
   end
-
 end
