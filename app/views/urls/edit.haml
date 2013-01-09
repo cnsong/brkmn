@@ -25,4 +25,4 @@
     |
   = link_to 'Delete', '/urls/' + @url.id.to_s, :confirm => 'Are you sure you would like to delete this shortened URL (' + shortened_url(@url.shortened) + ') ?', :method => :delete, :class => 'link'
   |
-  = link_to 'Back', urls_path, :class => 'link'
+  = link_to 'Back to URLS', urls_path, :class => 'link'

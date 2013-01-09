@@ -19,18 +19,32 @@ class UrlsController < ApplicationController
   def index
     @page_title = "Shorten a URL - #{REDIRECT_DOMAIN}"
     
-    hilite
+    @search = params[:search]
     
-    @search_text = params[:search] || session[:search]
-  
-    if params[:search] != session[:search]
-      session[:search] = @search_text
+    if @search != nil
+      redirect_to '/urls/search/' + params[:search]
     end
     
+    hilite
+    
     if current_user.superadmin?
-      @urls = Url.search(@search_text).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
+      @urls = Url.order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
     else
-      @urls = Url.search(@search_text).mine(current_user).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
+      @urls = Url.mine(current_user).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
+    end
+  end
+  
+  def search
+    @page_title = "Shorten a URL - #{REDIRECT_DOMAIN}"
+    
+    hilite
+    
+    @search_text = params[:search]
+    
+    if current_user.superadmin?
+      @urls = Url.search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
+    else
+      @urls = Url.search(params[:search]).mine(current_user).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
     end
   end
 
@@ -67,6 +81,8 @@ class UrlsController < ApplicationController
   end
   
   def update
+    @url = Url.find params[:id]
+    
     respond_to do |f|
       f.html {
         if @url.update_attributes(params[:url])
@@ -82,6 +98,8 @@ class UrlsController < ApplicationController
   end
   
   def reset
+    @url = Url.find params[:id]
+    
     respond_to do |f|
       f.html {
         if @url.update_attribute(:clicks, 0)
@@ -97,6 +115,8 @@ class UrlsController < ApplicationController
   end
   
   def destroy
+    @url = Url.find params[:id]
+
     respond_to do |f|
       f.html {
         if @url.destroy
@@ -138,7 +158,7 @@ class UrlsController < ApplicationController
     case params[:sort] || session[:sort]
     when '"to"'
       @to_header = 'to hilite'
-      @click_header = 'clicks'
+      @clicks_header = 'clicks'
       @shortened_header = 'shortened'
     when "clicks"
       @clicks_header = 'clicks hilite'
@@ -146,7 +166,7 @@ class UrlsController < ApplicationController
       @shortened_header = 'shortened'
     else
       @shortened_header = 'shortened hilite'
-      @click_header = 'clicks'
+      @clicks_header = 'clicks'
       @to_header = 'to'
     end
   end
