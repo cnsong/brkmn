@@ -16,6 +16,6 @@ Brkmn::Application.routes.draw do
 
   match '/:id' => 'redirector#index', :as => :shortened
   
-  match '/urls/:id' => 'urls#reset', :as => :reset
+  match '/urls/:id' => 'urls#reset', :via => 'post', :as => :reset
   
 end
