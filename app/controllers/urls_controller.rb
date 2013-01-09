@@ -22,7 +22,7 @@ class UrlsController < ApplicationController
     @search = params[:search]
     
     if @search != nil
-      redirect_to '/urls/search/' + params[:search]
+      redirect_to '/urls/search/' + @search.strip.gsub(' ', '-')
     end
     
     hilite
@@ -38,8 +38,6 @@ class UrlsController < ApplicationController
     @page_title = "Shorten a URL - #{REDIRECT_DOMAIN}"
     
     hilite
-    
-    @search_text = params[:search]
     
     if current_user.superadmin?
       @urls = Url.search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])

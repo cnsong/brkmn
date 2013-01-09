@@ -44,7 +44,7 @@ class Url < ActiveRecord::Base
   
   def self.search(search)
     if search
-      where('shortened like ? OR "to" like ?', "%#{search}%", "%#{search}%")
+      where('lower(shortened) like lower(?) OR lower("to") like lower(?)', "%#{search}%", "%#{search}%")
     else
       scoped
     end
