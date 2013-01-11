@@ -1,4 +1,5 @@
 require 'base32/crockford'
+require 'uri'
 class Url < ActiveRecord::Base
   validates_presence_of :to
 
@@ -10,7 +11,7 @@ class Url < ActiveRecord::Base
   attr_accessible :to, :shortened, :auto, :clicks
   before_create :generate_url
 
-  URL_FORMAT = /^[a-z\d\/]+$/i
+  URL_FORMAT = /^[a-z\d\/_]+$/i
 
   scope :auto, where({:auto => true})
   scope :mine, Proc.new{|u| 
@@ -20,6 +21,9 @@ class Url < ActiveRecord::Base
   validate :to do
     if self.to.match(PROTECTED_REDIRECT_REGEX)
       self.errors.add(:to, "cannot be 'localhost' or 'brk.mn'.")
+    end
+    if ! valid_url?(self.to)
+      self.errors.add(:to, "is not a valid URL and contains invalid characters.")
     end
   end
 
@@ -32,8 +36,8 @@ class Url < ActiveRecord::Base
     if self.shortened.match(PROTECTED_URL_REGEX)
       self.errors.add(:shortened, "is a protected URL and cannot be used. Please choose another.")
     end
-    if ! self.shortened.match(URL_FORMAT)
-      self.errors.add(:shortened, "needs to contains letters, numbers, or the forward slash")
+    if ! valid_url?(self.shortened)
+      self.errors.add(:shortened, "is not a valid URL and contains invalid characters.")
     end
     return 
   end
@@ -63,6 +67,12 @@ class Url < ActiveRecord::Base
     else
       scoped
     end
+  end
+  
+  def valid_url?(url)
+    !!URI.parse(url)
+    rescue URI::InvalidURIError
+      false
   end
 
   def generate_url
