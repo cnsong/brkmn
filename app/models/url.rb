@@ -23,11 +23,11 @@ class Url < ActiveRecord::Base
     end
   end
 
-  validate :shortened do
+  validate :shortened, :on => :create do
     # We will auto-create if it's blank.
     return if self.shortened.blank?
-    if Url.count(:conditions =>{:shortened => self.shortened, :to => self.to}) > 0
-      self.errors.add(:shortened, "is already in use for (" + self.to + "). Please choose another.")
+    if Url.count(:conditions =>{:shortened => self.shortened, :user_id => self.user_id}) > 0
+      self.errors.add(:shortened, "(" + self.shortened + ") is already in use. Please choose another.")
     end
     if self.shortened.match(PROTECTED_URL_REGEX)
       self.errors.add(:shortened, "is a protected URL and cannot be used. Please choose another.")
@@ -38,6 +38,21 @@ class Url < ActiveRecord::Base
     return 
   end
   
+  validate :shortened, :on => :update do
+    # We will auto-create if it's blank.
+    return if self.shortened.blank?
+    if Url.count(:conditions =>{:shortened => self.shortened, :to => self.to, :user_id => self.user_id}) > 0
+      self.errors.add(:shortened, "(" + self.shortened + ") is already in use for " + self.to + ". Please choose another.")
+    end
+    if self.shortened.match(PROTECTED_URL_REGEX)
+      self.errors.add(:shortened, "is a protected URL and cannot be used. Please choose another.")
+    end
+    if ! self.shortened.match(URL_FORMAT)
+      self.errors.add(:shortened, "needs to contains letters, numbers, or the forward slash")
+    end
+    return 
+  end
+
   def self.all_owners
 	%w(Others Mine)
   end

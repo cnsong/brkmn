@@ -9,7 +9,11 @@ class UrlsController < ApplicationController
   
   def show
     begin
-      @url = Url.mine(current_user).find params[:id]
+      unless current_user.superadmin?
+        @url = Url.mine(current_user).find params[:id]
+      else
+        @url = Url.find params[:id]
+      end
     rescue
       flash[:error] = "Insufficient privileges. Access denied."
       redirect_to urls_path
@@ -71,7 +75,11 @@ class UrlsController < ApplicationController
   
   def edit
     begin
-      @url = Url.mine(current_user).find params[:id]
+      unless current_user.superadmin?
+        @url = Url.mine(current_user).find params[:id]
+      else
+      	@url = Url.find params[:id]
+      end
     rescue
       flash[:error] = "Insufficient privileges. Access denied."
       redirect_to urls_path
