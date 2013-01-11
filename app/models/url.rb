@@ -4,7 +4,7 @@ class Url < ActiveRecord::Base
   validates_presence_of :to
 
   validates_length_of :to, :maximum => 10.kilobytes, :allow_blank => false 
-  validates_format_of :to, :with => /^https?:\/\/.+/i, :message => 'should begin with http:// or https:// and look like a valid URL'
+  validates_format_of :to, :with => /^https?:\/\/.+/i, :message => 'should begin with http:// or https:// and contain a valid URL'
 
   belongs_to :user
 
@@ -22,7 +22,7 @@ class Url < ActiveRecord::Base
     if self.to.match(PROTECTED_REDIRECT_REGEX)
       self.errors.add(:to, "cannot be 'localhost' or 'brk.mn'.")
     end
-    if ! valid_url?(self.to)
+    if ! valid_url?(self.to.delete "https://", "http://")
       self.errors.add(:to, "is not a valid URL and contains invalid characters.")
     end
   end
@@ -51,8 +51,8 @@ class Url < ActiveRecord::Base
     if self.shortened.match(PROTECTED_URL_REGEX)
       self.errors.add(:shortened, "is a protected URL and cannot be used. Please choose another.")
     end
-    if ! self.shortened.match(URL_FORMAT)
-      self.errors.add(:shortened, "needs to contains letters, numbers, or the forward slash")
+    if ! valid_url?(self.shortened)
+      self.errors.add(:shortened, "is not a valid URL and contains invalid characters.")
     end
     return 
   end
@@ -68,9 +68,9 @@ class Url < ActiveRecord::Base
       scoped
     end
   end
-  
+    
   def valid_url?(url)
-    !!URI.parse(url)
+      !!URI.parse(url)
     rescue URI::InvalidURIError
       false
   end
