@@ -1,19 +1,22 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
-  rescue_from CanCan::AccessDenied do |exception|
-    flash[:error] = "Insufficient privileges. Access denied."
-    redirect_to urls_path
-  end
-
-  def is_authenticated
-    # In production with the apache config in README.rdoc there should never be an app-level
-    # authentication request.
-    authenticate_or_request_with_http_basic 'The Berkman URL Shortener' do |username, password|
-      @current_user = User.find_by_username(username)
+  force_ssl
+  helper_method :logged_in?
+  
+  def require_login
+    unless logged_in?
+      flash[:error] = "You must be logged in to access this section." 
+      redirect_to log_in_path # Prevents the current action from running
     end
   end
-
+  
+  private
+  
   def current_user
-    @current_user
+    @current_user ||= User.find_by_auth_token!(cookies[:auth_token]) if cookies[:auth_token]
   end
+  
+  def logged_in?
+    current_user
+  end  
 end

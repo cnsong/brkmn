@@ -1,0 +1,22 @@
+%fieldset
+  %legend Sign Up
+  = form_for @user do |f|
+    - if @user.errors.any?
+      %div.error_messages 
+        %h2 Form is invalid:
+        %ul
+        - @user.errors.full_messages.each do |msg|
+          %li= msg
+    = f.label :email
+    = f.text_field :email
+    %p
+    %p
+    = f.label :password
+    = f.password_field :password
+    %p
+    %p
+    = f.label :password_confirmation
+    = f.password_field :password_confirmation
+    %p
+    %p
+    = f.submit "Sign Up"

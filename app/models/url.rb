@@ -30,8 +30,8 @@ class Url < ActiveRecord::Base
   validate :shortened, :on => :create do
     # We will auto-create if it's blank.
     return if self.shortened.blank?
-    if Url.count(:conditions =>{:shortened => self.shortened, :user_id => self.user_id}) > 0
-      self.errors.add(:shortened, "(" + self.shortened + ") is already in use. Please choose another.")
+    if Url.count(:conditions =>{:shortened => self.shortened}) > 0
+      self.errors.add(:shortened, "(" + self.shortened + ") is already in use in the system. Please choose another.")
     end
     if self.shortened.match(PROTECTED_URL_REGEX)
       self.errors.add(:shortened, "is a protected URL and cannot be used. Please choose another.")

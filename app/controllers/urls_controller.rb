@@ -1,6 +1,6 @@
 class UrlsController < ApplicationController
   
-  before_filter :is_authenticated
+  before_filter :require_login
   helper_method :sort_column, :sort_direction
 
   def bookmarklet
@@ -9,7 +9,7 @@ class UrlsController < ApplicationController
   
   def show
     begin
-      unless current_user.superadmin?
+      unless current_user.admin?
         @url = Url.mine(current_user).find params[:id]
       else
         @url = Url.find params[:id]
@@ -31,7 +31,7 @@ class UrlsController < ApplicationController
     
     hilite
     
-    if current_user.superadmin?
+    if current_user.admin?
       @urls = Url.order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
     else
       @urls = Url.mine(current_user).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
@@ -43,7 +43,7 @@ class UrlsController < ApplicationController
     
     hilite
     
-    if current_user.superadmin?
+    if current_user.admin?
       @urls = Url.search(params[:search]).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
     else
       @urls = Url.search(params[:search]).mine(current_user).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page], :per_page => params[:per_page])
@@ -75,7 +75,7 @@ class UrlsController < ApplicationController
   
   def edit
     begin
-      unless current_user.superadmin?
+      unless current_user.admin?
         @url = Url.mine(current_user).find params[:id]
       else
       	@url = Url.find params[:id]

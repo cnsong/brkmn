@@ -1,10 +1,4 @@
 .add_form
-  - if flash[:notice]
-    #notice.message= flash[:notice]
-  - elsif flash[:warning]
-    #warning.message= flash[:warning]
-  - elsif flash[:error]
-    #error.message= flash[:error]
   %fieldset
     %legend Shorten a URL
     = form_for(Url.new(:to => (params[:url].blank?) ? 'http://' : params[:url][:to])) do |f|

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130107191829) do
+ActiveRecord::Schema.define(:version => 20130129155940) do
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false
@@ -39,15 +39,14 @@ ActiveRecord::Schema.define(:version => 20130107191829) do
   add_index "urls", ["user_id"], :name => "index_urls_on_user_id"
 
   create_table "users", :force => true do |t|
-    t.string   "username",   :limit => 100,                    :null => false
-    t.string   "email",      :limit => 100
-    t.boolean  "superadmin",                :default => false
-    t.datetime "created_at",                                   :null => false
-    t.datetime "updated_at",                                   :null => false
+    t.string   "email"
+    t.string   "password_hash"
+    t.string   "password_salt"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+    t.string   "auth_token"
+    t.string   "password_reset_token"
+    t.datetime "password_reset_sent_at"
   end
-
-  add_index "users", ["email"], :name => "index_users_on_email"
-  add_index "users", ["superadmin"], :name => "index_users_on_superadmin"
-  add_index "users", ["username"], :name => "index_users_on_username"
 
 end

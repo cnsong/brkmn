@@ -1,0 +1,19 @@
+%fieldset
+  %legend Log In
+  = form_tag sessions_path do
+    = label_tag :email
+    = text_field_tag :email, params[:email]
+    %p
+    %p
+    = label_tag :password
+    = password_field_tag :password
+    %p
+    %p
+    = label_tag :remember_me, "Remember Me"
+    = check_box_tag :remember_me, 1, params[:remember_me]
+    %p
+    %p
+    = link_to "Forgot Password?", new_password_reset_path
+    %p
+    %p
+    = submit_tag "Log In", :class => "button"

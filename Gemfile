@@ -5,6 +5,8 @@ gem 'rails'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
+gem 'bcrypt-ruby', :require => 'bcrypt'
+
 gem 'pg'
 gem 'will_paginate'
 gem 'haml'
