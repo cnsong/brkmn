@@ -5,9 +5,11 @@ class User < ActiveRecord::Base
   before_save :encrypt_password
   
   validates_confirmation_of :password
-  validates_presence_of :password, :on => :create
+  validates_presence_of :password
+  validates_length_of :password, :in => 6..20
   validates_presence_of :email
   validates_uniqueness_of :email
+  validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
   before_create { generate_token(:auth_token) }
   
   def self.authenticate(email, password)
@@ -29,7 +31,7 @@ class User < ActiveRecord::Base
   def send_password_reset
     generate_token(:password_reset_token)
     self.password_reset_sent_at = Time.zone.now
-    save!
+    save!(validate: false) 
     UserMailer.password_reset(self).deliver
   end
   
@@ -40,6 +42,6 @@ class User < ActiveRecord::Base
   end
   
   def admin?
-    false
+    admin
   end
 end

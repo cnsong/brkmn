@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130129155940) do
+ActiveRecord::Schema.define(:version => 20130129194926) do
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(:version => 20130129155940) do
     t.string   "auth_token"
     t.string   "password_reset_token"
     t.datetime "password_reset_sent_at"
+    t.boolean  "admin"
   end
 
 end
